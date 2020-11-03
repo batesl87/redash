@@ -246,13 +246,14 @@ def init_app(app):
         saml_auth,
         remote_user_auth,
         ldap_auth,
+        openid_auth
     )
 
     login_manager.init_app(app)
     login_manager.anonymous_user = models.AnonymousUser
 
     from redash.security import csrf
-    for auth in [google_oauth, saml_auth, remote_user_auth, ldap_auth]:
+    for auth in [google_oauth, saml_auth, remote_user_auth, ldap_auth, openid_auth]:
         blueprint = auth.blueprint
         csrf.exempt(blueprint)
         app.register_blueprint(blueprint)

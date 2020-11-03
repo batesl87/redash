@@ -22,6 +22,16 @@ SAML_SSO_URL = os.environ.get("REDASH_SAML_SSO_URL", "")
 SAML_X509_CERT = os.environ.get("REDASH_SAML_X509_CERT", "")
 SAML_LOGIN_ENABLED = SAML_SSO_URL != "" and SAML_METADATA_URL != ""
 
+OPENID_AUTH_URL = os.environ.get("REDASH_OPENID_AUTH_URL", "")
+OPENID_LOGIN_ENABLED = OPENID_AUTH_URL != ""
+OPENID_TOKEN_URL = os.environ.get("REDASH_OPENID_TOKEN_URL", "")
+OPENID_CLIENT_ID = os.environ.get("REDASH_OPENID_CLIENT_ID", "")
+OPENID_CLIENT_SECRET = os.environ.get("REDASH_OPENID_CLIENT_SECRET", "")
+OPENID_SCOPE = os.environ.get("REDASH_OPENID_SCOPE", "")
+OPENID_NAME_CLAIM = os.environ.get("REDASH_OPENID_NAME_CLAIM", "")
+OPENID_EMAIL_CLAIM = os.environ.get("REDASH_OPENID_EMAIL_CLAIM", "")
+
+
 DATE_FORMAT = os.environ.get("REDASH_DATE_FORMAT", "DD/MM/YY")
 TIME_FORMAT = os.environ.get("REDASH_TIME_FORMAT", "HH:mm")
 INTEGER_FORMAT = os.environ.get("REDASH_INTEGER_FORMAT", "0,0")
@@ -61,6 +71,14 @@ settings = {
     "auth_saml_nameid_format": SAML_NAMEID_FORMAT,
     "auth_saml_sso_url": SAML_SSO_URL,
     "auth_saml_x509_cert": SAML_X509_CERT,
+    "auth_openid_client_id": OPENID_CLIENT_ID,
+    "auth_openid_scope": OPENID_SCOPE,
+    "auth_openid_auth_url": OPENID_AUTH_URL,
+    "auth_openid_client_secret": OPENID_CLIENT_SECRET,
+    "auth_openid_name_claim": OPENID_NAME_CLAIM,
+    "auth_openid_email_claim": OPENID_EMAIL_CLAIM,
+    "auth_openid_login_enabled": OPENID_LOGIN_ENABLED,
+    "auth_openid_token_url": OPENID_TOKEN_URL,
     "date_format": DATE_FORMAT,
     "time_format": TIME_FORMAT,
     "integer_format": INTEGER_FORMAT,
