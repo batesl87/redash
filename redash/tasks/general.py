@@ -66,10 +66,11 @@ def send_mail(to, subject, html, text):
 
 
 @job("queries", timeout=30, ttl=90)
-def test_connection(data_source_id):
+def test_connection(user_id, data_source_id):
     try:
         data_source = models.DataSource.get_by_id(data_source_id)
-        data_source.query_runner.test_connection()
+        user = models.users.User.get_by_id(user_id)
+        data_source.query_runner.test_connection(user)
     except Exception as e:
         return e
     else:
@@ -77,10 +78,11 @@ def test_connection(data_source_id):
 
 
 @job("schemas", queue_class=Queue, at_front=True, timeout=300, ttl=90)
-def get_schema(data_source_id, refresh):
+def get_schema(user_id, data_source_id, refresh):
     try:
         data_source = models.DataSource.get_by_id(data_source_id)
-        return data_source.get_schema(refresh)
+        user = models.users.User.get_by_id(user_id)
+        return data_source.get_schema(user, refresh)
     except NotSupported:
         return {
             "error": {

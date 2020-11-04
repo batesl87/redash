@@ -142,10 +142,10 @@ class BaseQueryRunner(object):
         annotated_query = "/* {} */ {}".format(annotation, query)
         return annotated_query
 
-    def test_connection(self):
+    def test_connection(self, user):
         if self.noop_query is None:
             raise NotImplementedError()
-        data, error = self.run_query(self.noop_query, None)
+        data, error = self.run_query(self.noop_query, user)
 
         if error is not None:
             raise Exception(error)
@@ -203,17 +203,17 @@ class BaseQueryRunner(object):
 
 
 class BaseSQLQueryRunner(BaseQueryRunner):
-    def get_schema(self, get_stats=False):
+    def get_schema(self, user, get_stats=False):
         schema_dict = {}
-        self._get_tables(schema_dict)
+        self._get_tables(schema_dict, user)
         if settings.SCHEMA_RUN_TABLE_SIZE_CALCULATIONS and get_stats:
-            self._get_tables_stats(schema_dict)
+            self._get_tables_stats(schema_dict, user)
         return list(schema_dict.values())
 
-    def _get_tables(self, schema_dict):
+    def _get_tables(self, schema_dict, user):
         return []
 
-    def _get_tables_stats(self, tables_dict):
+    def _get_tables_stats(self, tables_dict, user):
         for t in tables_dict.keys():
             if type(tables_dict[t]) == dict:
                 res = self._run_query_internal("select count(*) as cnt from %s" % t)

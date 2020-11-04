@@ -254,6 +254,9 @@ class User(
         ).hexdigest()
         return "{0}-{1}".format(self.id, identity)
 
+    def get_org_id(self):
+        return self.org_id
+
 
 @generic_repr("id", "name", "type", "org_id")
 class Group(db.Model, BelongsToOrgMixin):
