@@ -7,7 +7,7 @@ import { SettingsEditorPropTypes, SettingsEditorDefaultProps } from "../prop-typ
 import PasswordLoginSettings from "./PasswordLoginSettings";
 import GoogleLoginSettings from "./GoogleLoginSettings";
 import SAMLSettings from "./SAMLSettings";
-import OPENIDSettings  from "./OPENIDSettings"
+import OpenIDSettings  from "./OpenIDSettings"
 
 export default function AuthSettings(props) {
   const { values, onChange } = props;
@@ -33,7 +33,7 @@ export default function AuthSettings(props) {
       <PasswordLoginSettings {...props} onChange={handleChange} />
       <GoogleLoginSettings {...props} onChange={handleChange} />
       <SAMLSettings {...props} onChange={handleChange} />
-      <OPENIDSettings {...props} onChange={handleChange} />
+      <OpenIDSettings {...props} onChange={handleChange} />
     </DynamicComponent>
   );
 }

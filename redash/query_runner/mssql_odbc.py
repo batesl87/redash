@@ -45,7 +45,7 @@ class SQLServerODBC(BaseSQLQueryRunner):
                     "default": "UTF-8",
                     "title": "Character Set",
                 },
-                "use_aad": {"type": "boolean", "title": "Use Azure AD", "default": False,},
+                "use_oauth2": {"type": "boolean", "title": "Use OpenID Identity", "default": False,},
                 "use_ssl": {"type": "boolean", "title": "Use SSL", "default": False,},
                 "verify_ssl": {
                     "type": "boolean",
@@ -62,7 +62,7 @@ class SQLServerODBC(BaseSQLQueryRunner):
                 "charset",
                 "use_ssl",
                 "verify_ssl",
-                "use_aad",
+                "use_oauth2",
             ],
             "required": ["server", "db"],
             "secret": ["password"],
@@ -114,7 +114,7 @@ class SQLServerODBC(BaseSQLQueryRunner):
         connection = None
 
         try:
-            if not self.configuration.get("use_aad", False):
+            if not self.configuration.get("use_oauth2", False):
                 server = self.configuration.get("server")
                 user_name = self.configuration.get("user", "")
                 password = self.configuration.get("password", "")

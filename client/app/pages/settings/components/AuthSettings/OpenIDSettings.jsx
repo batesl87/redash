@@ -5,7 +5,7 @@ import Radio from "antd/lib/radio";
 import DynamicComponent from "@/components/DynamicComponent";
 import { SettingsEditorPropTypes, SettingsEditorDefaultProps } from "../prop-types";
 
-export default function OPENIDSettings(props) {
+export default function OpenIDSettings(props) {
   const { values, onChange } = props;
 
   const onChangeEnabledStatus = e => {
@@ -14,9 +14,9 @@ export default function OPENIDSettings(props) {
   };
 
   return (
-    <DynamicComponent name="OrganizationSettings.OPENIDSettings" {...props}>
-      <h4>OPENID</h4>
-      <Form.Item label="OPENID Enabled">
+    <DynamicComponent name="OrganizationSettings.OpenIDSettings" {...props}>
+      <h4>OpenID</h4>
+      <Form.Item label="OpenID Enabled">
         <Radio.Group
           onChange={onChangeEnabledStatus}
           value={values.auth_openid_login_enabled}>
@@ -26,43 +26,43 @@ export default function OPENIDSettings(props) {
       </Form.Item>
       {values.auth_openid_login_enabled && (
         <>
-          <Form.Item label="OPENID Auth URL">
+          <Form.Item label="OpenID Auth URL">
             <Input
               value={values.auth_openid_auth_url}
               onChange={e => onChange({ auth_openid_auth_url: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="OPENID Token URL">
+          <Form.Item label="OpenID Token URL">
             <Input
               value={values.auth_openid_token_url}
               onChange={e => onChange({ auth_openid_token_url: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="OPENID Client ID">
+          <Form.Item label="OpenID Client ID">
             <Input
               value={values.auth_openid_client_id}
               onChange={e => onChange({ auth_openid_client_id: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="OPENID Client Secret">
+          <Form.Item label="OpenID Client Secret">
             <Input
               value={values.auth_openid_client_secret}
               onChange={e => onChange({ auth_openid_client_secret: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="OPENID Scope (openid profile offline_access)">
+          <Form.Item label="OpenID Scope (openid profile offline_access)">
             <Input
               value={values.auth_openid_scope}
               onChange={e => onChange({ auth_openid_scope: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="OPENID Name Claim (name)">
+          <Form.Item label="OpenID Name Claim (name)">
             <Input
               value={values.auth_openid_name_claim}
               onChange={e => onChange({ auth_openid_name_claim: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="OPENID Email Claim (email)">
+          <Form.Item label="OpenID Email Claim (email)">
             <Input
               value={values.auth_openid_email_claim}
               onChange={e => onChange({ auth_openid_email_claim: e.target.value })}
@@ -74,6 +74,6 @@ export default function OPENIDSettings(props) {
   );
 }
 
-OPENIDSettings.propTypes = SettingsEditorPropTypes;
+OpenIDSettings.propTypes = SettingsEditorPropTypes;
 
-OPENIDSettings.defaultProps = SettingsEditorDefaultProps;
+OpenIDSettings.defaultProps = SettingsEditorDefaultProps;

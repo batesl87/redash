@@ -17,8 +17,6 @@ USER_REFRESH_TOKEN = "users:refresh_token"
 
 logger = logging.getLogger("openid_auth")
 blueprint = Blueprint("openid_auth", __name__)
-# inline_metadata_template = """<?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor entityID="{{entity_id}}" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"><md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>{{x509_cert}}</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="{{sso_url}}"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="{{sso_url}}"/></md:IDPSSODescriptor></md:EntityDescriptor>"""
-
 
 def get_oauth(org, redirect_uri, scope = None):
     """
@@ -49,6 +47,7 @@ def idp_initiated(org_slug=None):
     client_secret = current_org.get_setting("auth_openid_client_secret")
 
     authorization_response_url = request.url
+    # NOTE: Allows http when calls are made to localhost
     if 'http://localhost' in request.host_url.lower():
         authorization_response_url = authorization_response_url.replace('http:','https:')
 
@@ -94,17 +93,9 @@ def sp_initiated(org_slug=None):
     # auth_url = 'https://login.microsoftonline.com/neurodev.onmicrosoft.com/oauth2/v2.0/authorize'
     authorization_url, state = oauth.authorization_url(
         auth_url,)
-        # access_type="offline", prompt="select_account")
     
     response = redirect(authorization_url, code=302)
 
-    # NOTE:
-    #   I realize I _technically_ don't need to set Cache-Control or Pragma:
-    #     https://stackoverflow.com/a/5494469
-    #   However, Section 3.2.3.2 of the SAML spec suggests they are set:
-    #     http://docs.oasis-open.org/security/saml/v2.0/saml-bindings-2.0-os.pdf
-    #   We set those headers here as a "belt and suspenders" approach,
-    #   since enterprise environments don't always conform to RFCs
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
     return response
