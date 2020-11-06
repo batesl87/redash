@@ -126,7 +126,7 @@ export default function DesktopNavbar() {
             <span>Help</span>
           </HelpTrigger>
         </Menu.Item>
-        {firstSettingsTab && currentUser.hasPermission("access_settings") && (
+        {firstSettingsTab && currentUser.hasPermission("admin") && (
           <Menu.Item key="settings">
             <Link href={firstSettingsTab.path} data-test="SettingsLink">
               <SettingOutlinedIcon />
@@ -147,7 +147,7 @@ export default function DesktopNavbar() {
               <span>{currentUser.name}</span>
             </span>
           }>
-          {currentUser.hasPermission("access_settings") && (
+          {currentUser.hasPermission("admin") && (
           <Menu.Item key="profile">
             <Link href="users/me">Profile</Link>
           </Menu.Item>

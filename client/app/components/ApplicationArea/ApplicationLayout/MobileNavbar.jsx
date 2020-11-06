@@ -44,7 +44,7 @@ export default function MobileNavbar({ getPopupContainer }) {
                   <Link href="alerts">Alerts</Link>
                 </Menu.Item>
               )}
-              {currentUser.hasPermission("access_settings") && (
+              {currentUser.hasPermission("admin") && (
                 <Menu.Item key="profile">
                   <Link href="users/me">Edit Profile</Link>
                 </Menu.Item>
