@@ -14,11 +14,11 @@ COPY viz-lib /frontend/viz-lib
 ARG code_coverage
 ENV BABEL_ENV=${code_coverage:+test}
 
-RUN if [ "x$skip_frontend_build" = "x" ] ; then npm ci --unsafe-perm; fi
+RUN if [ "$skip_frontend_build" = "false" ] ; then npm ci --unsafe-perm; fi
 
 COPY client /frontend/client
 COPY webpack.config.js /frontend/
-RUN if [ "x$skip_frontend_build" = "x" ] ; then npm run build; else mkdir -p /frontend/client/dist && touch /frontend/client/dist/multi_org.html && touch /frontend/client/dist/index.html; fi
+RUN if [ "$skip_frontend_build" = "false" ] ; then npm run build; else mkdir -p /frontend/client/dist && touch /frontend/client/dist/multi_org.html && touch /frontend/client/dist/index.html; fi
 FROM python:3.7-slim
 
 EXPOSE 5000
