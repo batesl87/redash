@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 LAST_ACTIVE_KEY = "users:last_active_at"
 
-
 def sync_last_active_at():
     """
     Update User model with the active_at timestamp from Redis. We first fetch
@@ -273,6 +272,8 @@ class Group(db.Model, BelongsToOrgMixin):
         "list_dashboards",
         "list_alerts",
         "list_data_sources",
+        "access_alerts",
+        "access_settings",
     ]
 
     BUILTIN_GROUP = "builtin"
@@ -286,7 +287,8 @@ class Group(db.Model, BelongsToOrgMixin):
     org = db.relationship("Organization", back_populates="groups")
     type = Column(db.String(255), default=REGULAR_GROUP)
     name = Column(db.String(100))
-    permissions = Column(postgresql.ARRAY(db.String(255)), default=DEFAULT_PERMISSIONS)
+    permissions = Column(MutableList.as_mutable(postgresql.ARRAY(db.String(255))), default=DEFAULT_PERMISSIONS)
+
     created_at = Column(db.DateTime(True), default=db.func.now())
 
     __tablename__ = "groups"

@@ -41,7 +41,7 @@ export default function DesktopNavbar() {
 
   const canCreateQuery = currentUser.hasPermission("create_query");
   const canCreateDashboard = currentUser.hasPermission("create_dashboard");
-  const canCreateAlert = currentUser.hasPermission("list_alerts");
+  const canCreateAlert = currentUser.hasPermission("list_alerts") && currentUser.hasPermission("access_alerts");
 
   return (
     <div className="desktop-navbar">
@@ -70,7 +70,7 @@ export default function DesktopNavbar() {
             </Link>
           </Menu.Item>
         )}
-        {currentUser.hasPermission("list_alerts") && (
+        {currentUser.hasPermission("list_alerts") && currentUser.hasPermission("access_alerts") && (
           <Menu.Item key="alerts">
             <Link href="alerts">
               <AlertOutlinedIcon />
@@ -126,7 +126,7 @@ export default function DesktopNavbar() {
             <span>Help</span>
           </HelpTrigger>
         </Menu.Item>
-        {firstSettingsTab && (
+        {firstSettingsTab && currentUser.hasPermission("access_settings") && (
           <Menu.Item key="settings">
             <Link href={firstSettingsTab.path} data-test="SettingsLink">
               <SettingOutlinedIcon />
@@ -147,9 +147,11 @@ export default function DesktopNavbar() {
               <span>{currentUser.name}</span>
             </span>
           }>
+          {currentUser.hasPermission("access_settings") && (
           <Menu.Item key="profile">
             <Link href="users/me">Profile</Link>
           </Menu.Item>
+          )}
           {currentUser.hasPermission("super_admin") && (
             <Menu.Item key="status">
               <Link href="admin/status">System Status</Link>

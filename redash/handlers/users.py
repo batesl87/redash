@@ -68,7 +68,7 @@ class UserListResource(BaseResource):
     decorators = BaseResource.decorators + [
         limiter.limit("200/day;50/hour", methods=["POST"])
     ]
-
+    @require_permission("access_settings")
     def get_users(self, disabled, pending, search_term):
         if disabled:
             users = models.User.all_disabled(self.current_org)
@@ -99,6 +99,7 @@ class UserListResource(BaseResource):
         return order_results(users, fallback=not bool(search_term))
 
     @require_permission("list_users")
+    @require_permission("access_settings")
     def get(self):
         page = request.args.get("page", 1, type=int)
         page_size = request.args.get("page_size", 25, type=int)
@@ -134,6 +135,7 @@ class UserListResource(BaseResource):
         return paginate(users, page, page_size, serialize_user)
 
     @require_admin
+    @require_permission("access_settings")
     def post(self):
         req = request.get_json(force=True)
         require_fields(req, ("name", "email"))
@@ -173,6 +175,7 @@ class UserListResource(BaseResource):
 
 class UserInviteResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         return invite_user(self.current_org, self.current_user, user)
@@ -180,6 +183,7 @@ class UserInviteResource(BaseResource):
 
 class UserResetPasswordResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         if user.is_disabled:
@@ -190,6 +194,7 @@ class UserResetPasswordResource(BaseResource):
 
 
 class UserRegenerateApiKeyResource(BaseResource):
+    @require_permission("access_settings")
     def post(self, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         if user.is_disabled:
@@ -210,6 +215,7 @@ class UserRegenerateApiKeyResource(BaseResource):
 class UserResource(BaseResource):
     decorators = BaseResource.decorators + [limiter.limit("50/hour", methods=["POST"])]
 
+    @require_permission("access_settings")
     def get(self, user_id):
         require_permission_or_owner("list_users", user_id)
         user = get_object_or_404(
@@ -222,6 +228,7 @@ class UserResource(BaseResource):
 
         return user.to_dict(with_api_key=is_admin_or_owner(user_id))
 
+    @require_permission("access_settings")
     def post(self, user_id):
         require_admin_or_owner(user_id)
         user = models.User.get_by_id_and_org(user_id, self.current_org)
@@ -302,6 +309,7 @@ class UserResource(BaseResource):
         return user.to_dict(with_api_key=is_admin_or_owner(user_id))
 
     @require_admin
+    @require_permission("access_settings")
     def delete(self, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         # admin cannot delete self; current user is an admin (`@require_admin`)
@@ -326,6 +334,7 @@ class UserResource(BaseResource):
 
 class UserDisableResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         # admin cannot disable self; current user is an admin (`@require_admin`)
@@ -342,6 +351,7 @@ class UserDisableResource(BaseResource):
         return user.to_dict(with_api_key=is_admin_or_owner(user_id))
 
     @require_admin
+    @require_permission("access_settings")
     def delete(self, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         user.enable()

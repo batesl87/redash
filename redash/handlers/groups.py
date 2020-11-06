@@ -4,10 +4,12 @@ from flask_restful import abort
 from redash import models
 from redash.permissions import require_admin, require_permission
 from redash.handlers.base import BaseResource, get_object_or_404
+from sqlalchemy.orm.attributes import flag_modified
 
 
 class GroupListResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self):
         name = request.json["name"]
         group = models.Group(name=name, org=self.current_org)
@@ -20,6 +22,7 @@ class GroupListResource(BaseResource):
 
         return group.to_dict()
 
+    @require_permission("access_settings")
     def get(self):
         if self.current_user.has_permission("admin"):
             groups = models.Group.all(self.current_org)
@@ -37,6 +40,7 @@ class GroupListResource(BaseResource):
 
 class GroupResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, group_id):
         group = models.Group.get_by_id_and_org(group_id, self.current_org)
 
@@ -52,6 +56,7 @@ class GroupResource(BaseResource):
 
         return group.to_dict()
 
+    @require_permission("access_settings")
     def get(self, group_id):
         if not (
             self.current_user.has_permission("admin")
@@ -68,6 +73,7 @@ class GroupResource(BaseResource):
         return group.to_dict()
 
     @require_admin
+    @require_permission("access_settings")
     def delete(self, group_id):
         group = models.Group.get_by_id_and_org(group_id, self.current_org)
         if group.type == models.Group.BUILTIN_GROUP:
@@ -84,6 +90,7 @@ class GroupResource(BaseResource):
 
 class GroupMemberListResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, group_id):
         user_id = request.json["user_id"]
         user = models.User.get_by_id_and_org(user_id, self.current_org)
@@ -102,6 +109,7 @@ class GroupMemberListResource(BaseResource):
         return user.to_dict()
 
     @require_permission("list_users")
+    @require_permission("access_settings")
     def get(self, group_id):
         if not (
             self.current_user.has_permission("admin")
@@ -115,6 +123,7 @@ class GroupMemberListResource(BaseResource):
 
 class GroupMemberResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def delete(self, group_id, user_id):
         user = models.User.get_by_id_and_org(user_id, self.current_org)
         user.group_ids.remove(int(group_id))
@@ -138,6 +147,7 @@ def serialize_data_source_with_group(data_source, data_source_group):
 
 class GroupDataSourceListResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, group_id):
         data_source_id = request.json["data_source_id"]
         data_source = models.DataSource.get_by_id_and_org(
@@ -160,6 +170,7 @@ class GroupDataSourceListResource(BaseResource):
         return serialize_data_source_with_group(data_source, data_source_group)
 
     @require_admin
+    @require_permission("access_settings")
     def get(self, group_id):
         group = get_object_or_404(
             models.Group.get_by_id_and_org, group_id, self.current_org
@@ -179,6 +190,7 @@ class GroupDataSourceListResource(BaseResource):
 
 class GroupDataSourceResource(BaseResource):
     @require_admin
+    @require_permission("access_settings")
     def post(self, group_id, data_source_id):
         data_source = models.DataSource.get_by_id_and_org(
             data_source_id, self.current_org
@@ -202,6 +214,7 @@ class GroupDataSourceResource(BaseResource):
         return serialize_data_source_with_group(data_source, data_source_group)
 
     @require_admin
+    @require_permission("access_settings")
     def delete(self, group_id, data_source_id):
         data_source = models.DataSource.get_by_id_and_org(
             data_source_id, self.current_org
@@ -219,3 +232,64 @@ class GroupDataSourceResource(BaseResource):
                 "member_id": data_source.id,
             }
         )
+
+class GroupPermissionListResource(BaseResource):
+    @require_admin
+    @require_permission("access_settings")
+    def post(self, group_id):
+        request_permission = request.json["permission"]
+        if request_permission not in models.Group.DEFAULT_PERMISSIONS:
+            abort(400, message="Supported permissions are: " + str(models.Group.DEFAULT_PERMISSIONS))
+        
+        group = models.Group.get_by_id_and_org(group_id, self.current_org)
+
+        curr_permissions = group.permissions
+        if request_permission not in curr_permissions:
+            curr_permissions.append(request_permission)
+            group.permissions = curr_permissions
+            
+            flag_modified(group, 'permissions')
+
+            models.db.session.commit()
+
+            self.record_event(
+                {
+                    "action": "add_permission",
+                    "object_id": group.id,
+                    "object_type": "group",
+                    "member_id": user.id,
+                }
+            )
+        return
+
+    @require_admin
+    @require_permission("access_settings")
+    def get(self, group_id):
+        group = models.Group.get_by_id_and_org(group_id, self.current_org)
+        return group.permissions
+
+class GroupPermissionResource(BaseResource):
+    @require_admin
+    @require_permission("access_settings")
+    def delete(self, group_id, permission):
+        group = models.Group.get_by_id_and_org(group_id, self.current_org)
+
+        curr_permissions = group.permissions
+        if permission not in curr_permissions:
+            abort(404)
+        else:
+            curr_permissions.remove(permission)
+            group.permissions = curr_permissions
+            
+            flag_modified(group, 'permissions')
+
+            models.db.session.commit()
+
+            self.record_event(
+                {
+                    "action": "remove_permission",
+                    "object_id": group_id,
+                    "object_type": "group",
+                    "member_id": permission,
+                }
+            )

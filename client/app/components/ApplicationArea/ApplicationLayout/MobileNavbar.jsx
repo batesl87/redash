@@ -39,16 +39,18 @@ export default function MobileNavbar({ getPopupContainer }) {
                   <Link href="queries">Queries</Link>
                 </Menu.Item>
               )}
-              {currentUser.hasPermission("list_alerts") && (
+              {currentUser.hasPermission("list_alerts") && currentUser.hasPermission("access_alerts") && (
                 <Menu.Item key="alerts">
                   <Link href="alerts">Alerts</Link>
                 </Menu.Item>
               )}
-              <Menu.Item key="profile">
-                <Link href="users/me">Edit Profile</Link>
-              </Menu.Item>
+              {currentUser.hasPermission("access_settings") && (
+                <Menu.Item key="profile">
+                  <Link href="users/me">Edit Profile</Link>
+                </Menu.Item>
+              )}
               <Menu.Divider />
-              {firstSettingsTab && (
+              {firstSettingsTab && currentUser.hasPermission("access_alerts") && (
                 <Menu.Item key="settings">
                   <Link href={firstSettingsTab.path}>Settings</Link>
                 </Menu.Item>

@@ -45,6 +45,8 @@ from redash.handlers.groups import (
     GroupMemberListResource,
     GroupMemberResource,
     GroupResource,
+    GroupPermissionListResource,
+    GroupPermissionResource,
 )
 from redash.handlers.permissions import (
     CheckPermissionResource,
@@ -178,6 +180,14 @@ api.add_org_resource(
     GroupMemberResource,
     "/api/groups/<group_id>/members/<user_id>",
     endpoint="group_member",
+)
+api.add_org_resource(
+    GroupPermissionListResource, "/api/groups/<group_id>/permissions", endpoint="group_permissions"
+)
+api.add_org_resource(
+    GroupPermissionResource,
+    "/api/groups/<group_id>/permissions/<permission>",
+    endpoint="group_permission",
 )
 api.add_org_resource(
     GroupDataSourceListResource,

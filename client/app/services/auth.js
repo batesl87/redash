@@ -14,7 +14,7 @@ export const currentUser = {
 
   canCreate() {
     return (
-      this.hasPermission("create_query") || this.hasPermission("create_dashboard") || this.hasPermission("list_alerts")
+      this.hasPermission("create_query") || this.hasPermission("create_dashboard") || (this.hasPermission("list_alerts" && this.hasPermission("access_alerts")))
     );
   },
 

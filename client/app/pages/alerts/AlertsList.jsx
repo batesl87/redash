@@ -76,7 +76,7 @@ class AlertsList extends React.Component {
           <PageHeader
             title={controller.params.pageTitle}
             actions={
-              currentUser.hasPermission("list_alerts") ? (
+              currentUser.hasPermission("list_alerts") && currentUser.hasPermission("access_alerts") ? (
                 <Link.Button block type="primary" href="alerts/new">
                   <i className="fa fa-plus m-r-5" />
                   New Alert

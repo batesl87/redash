@@ -16,6 +16,7 @@ from redash.utils import json_dumps
 
 
 class AlertResource(BaseResource):
+    @require_permission("access_alerts")
     def get(self, alert_id):
         alert = get_object_or_404(
             models.Alert.get_by_id_and_org, alert_id, self.current_org
@@ -26,6 +27,7 @@ class AlertResource(BaseResource):
         )
         return serialize_alert(alert)
 
+    @require_permission("access_alerts")
     def post(self, alert_id):
         req = request.get_json(True)
         params = project(req, ("options", "name", "query_id", "rearm"))
@@ -43,6 +45,7 @@ class AlertResource(BaseResource):
 
         return serialize_alert(alert)
 
+    @require_permission("access_alerts")
     def delete(self, alert_id):
         alert = get_object_or_404(
             models.Alert.get_by_id_and_org, alert_id, self.current_org
@@ -53,6 +56,7 @@ class AlertResource(BaseResource):
 
 
 class AlertMuteResource(BaseResource):
+    @require_permission("access_alerts")
     def post(self, alert_id):
         alert = get_object_or_404(
             models.Alert.get_by_id_and_org, alert_id, self.current_org
@@ -66,6 +70,7 @@ class AlertMuteResource(BaseResource):
             {"action": "mute", "object_id": alert.id, "object_type": "alert"}
         )
 
+    @require_permission("access_alerts")
     def delete(self, alert_id):
         alert = get_object_or_404(
             models.Alert.get_by_id_and_org, alert_id, self.current_org
@@ -81,6 +86,7 @@ class AlertMuteResource(BaseResource):
 
 
 class AlertListResource(BaseResource):
+    @require_permission("access_alerts")
     def post(self):
         req = request.get_json(True)
         require_fields(req, ("options", "name", "query_id"))
@@ -106,6 +112,7 @@ class AlertListResource(BaseResource):
 
         return serialize_alert(alert)
 
+    @require_permission("access_alerts")
     @require_permission("list_alerts")
     def get(self):
         self.record_event({"action": "list", "object_type": "alert"})
@@ -116,6 +123,7 @@ class AlertListResource(BaseResource):
 
 
 class AlertSubscriptionListResource(BaseResource):
+    @require_permission("access_alerts")
     def post(self, alert_id):
         req = request.get_json(True)
 
@@ -145,6 +153,7 @@ class AlertSubscriptionListResource(BaseResource):
         d = subscription.to_dict()
         return d
 
+    @require_permission("access_alerts")
     def get(self, alert_id):
         alert = models.Alert.get_by_id_and_org(alert_id, self.current_org)
         require_access(alert, self.current_user, view_only)
@@ -154,6 +163,7 @@ class AlertSubscriptionListResource(BaseResource):
 
 
 class AlertSubscriptionResource(BaseResource):
+    @require_permission("access_alerts")
     def delete(self, alert_id, subscriber_id):
         subscription = models.AlertSubscription.query.get_or_404(subscriber_id)
         require_admin_or_owner(subscription.user.id)
